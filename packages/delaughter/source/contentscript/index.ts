@@ -87,6 +87,9 @@ const applyDelaughter = async (
     options: Options,
 ) => {
     const video = document.getElementsByTagName('video')[0];
+    if (!video) {
+        return;
+    }
 
     if (!audioContext) {
         audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
