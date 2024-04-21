@@ -73,6 +73,11 @@ const Popup: React.FC<PopupProperties> = (
         confidence,
         setConfidence,
     ] = useState(defaultOptions.confidence);
+
+    const [
+        laughterVolume,
+        setLaughterVolume,
+    ] = useState(defaultOptions.laughterVolume);
     // #endregion state
 
 
@@ -91,6 +96,7 @@ const Popup: React.FC<PopupProperties> = (
 
     const reset = () => {
         setConfidence(defaultOptions.confidence);
+        setLaughterVolume(defaultOptions.laughterVolume);
     }
     // #endregion handlers
 
@@ -108,9 +114,11 @@ const Popup: React.FC<PopupProperties> = (
 
                 const {
                     confidence,
+                    laughterVolume,
                 } = data[OPTIONS_KEY] as Options;
 
                 setConfidence(confidence);
+                setLaughterVolume(laughterVolume);
 
                 setLoading(false);
             } catch (error) {
@@ -132,6 +140,7 @@ const Popup: React.FC<PopupProperties> = (
             try {
                 const options: Options = {
                     confidence,
+                    laughterVolume,
                 };
 
                 await chrome.storage.local.set({
@@ -146,6 +155,7 @@ const Popup: React.FC<PopupProperties> = (
     }, [
         activated,
         confidence,
+        laughterVolume,
     ]);
 
     /** Mount */
@@ -244,6 +254,34 @@ const Popup: React.FC<PopupProperties> = (
                     level={2}
                 />
             </div>
+
+            {activated && (
+                <>
+                    <div
+                        style={{
+                            ...sliderStyle,
+                        }}
+                    >
+                        <div>
+                            laughter volume
+                        </div>
+
+                        <Slider
+                            name="laughterVolume"
+                            value={laughterVolume}
+                            atChange={(value) => {
+                                setLaughterVolume(value);
+                            }}
+                            min={0}
+                            max={1}
+                            step={0.1}
+                            width={150}
+                            theme={dewiki}
+                            level={2}
+                        />
+                    </div>
+                </>
+            )}
 
             <div>
                 <LinkButton

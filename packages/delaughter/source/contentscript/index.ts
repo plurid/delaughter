@@ -58,7 +58,7 @@ const renderSpectrogram = (
 
         analyser.getByteFrequencyData(dataArray);
 
-        canvasCtx.fillStyle = "rgb(200 200 200)";
+        canvasCtx.fillStyle = 'rgb(0 0 0)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
         for (let i = 0; i < dataArray.length; i++) {

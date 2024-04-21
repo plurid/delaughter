@@ -14,6 +14,7 @@ export const IN_PRODUCTION = process.env.NODE_ENV === 'production';
 
 export const defaultOptions: Options = {
     confidence: 1,
+    laughterVolume: 0,
 };
 
 
