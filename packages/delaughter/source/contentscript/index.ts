@@ -7,6 +7,10 @@ import {
     OPTIONS_KEY,
     defaultOptions,
 } from '~data/constants';
+
+import {
+    spectrogramColors,
+} from '~data/constants/contentscript';
 // #endregion imports
 
 
@@ -19,6 +23,65 @@ let sourceNode: MediaElementAudioSourceNode | null;
 let gainNode: GainNode | null;
 let delaughterNode: AudioWorkletNode | null;
 let audioContext: AudioContext | null;
+let drawVisual: number | null;
+
+const canvasID = 'delaughter-spectrogram';
+
+
+const renderSpectrogram = (
+    audioContext: AudioContext,
+) => {
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    const bufferLength = analyser.frequencyBinCount;
+    let dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+
+    const WIDTH = 650;
+    const HEIGHT = 650;
+    const canvas = document.createElement('canvas');
+    canvas.id = canvasID;
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.zIndex = '100000';
+    const canvasCtx = canvas.getContext('2d');
+
+    function drawSpectrogram() {
+        drawVisual = requestAnimationFrame(drawSpectrogram);
+
+        if (!toggled || !canvasCtx) {
+            return;
+        }
+
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.fillStyle = "rgb(200 200 200)";
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        for (let i = 0; i < dataArray.length; i++) {
+            canvasCtx.fillStyle = (spectrogramColors as any)[dataArray[i] + ''];
+
+            canvasCtx.fillRect(i * 10, HEIGHT - dataArray[i], 10, 10);
+
+            const size = 20;
+            canvasCtx.fillRect(
+                Math.floor(i / size) * size,
+                (i % size) * size,
+                size,
+                size,
+            );
+        }
+    }
+
+    drawSpectrogram();
+
+    document.body.appendChild(canvas);
+
+    return analyser;
+}
 
 const applyDelaughter = async (
     options: Options,
@@ -36,15 +99,19 @@ const applyDelaughter = async (
     }
     gainNode = audioContext.createGain();
 
-    const processorURL = chrome.runtime.getURL('processor.js');
-    await audioContext.audioWorklet.addModule(processorURL);
-    delaughterNode = new AudioWorkletNode(
-        audioContext,
-        'delaughter-processor',
-    );
-    delaughterNode.connect(gainNode);
+    const analyser = renderSpectrogram(audioContext);
 
-    sourceNode.connect(delaughterNode);
+    // const processorURL = chrome.runtime.getURL('processor.js');
+    // await audioContext.audioWorklet.addModule(processorURL);
+    // delaughterNode = new AudioWorkletNode(
+    //     audioContext,
+    //     'delaughter-processor',
+    // );
+    // delaughterNode.connect(gainNode);
+
+    // sourceNode.connect(delaughterNode);
+    sourceNode.connect(analyser);
+    sourceNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
 }
 
@@ -57,6 +124,8 @@ const cleanupDelaughter = () => {
         return;
     }
 
+    cancelAnimationFrame(drawVisual);
+
     delaughterNode.disconnect();
     delaughterNode = null;
 
@@ -65,6 +134,11 @@ const cleanupDelaughter = () => {
 
     sourceNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
+
+    const canvas = document.getElementById(canvasID);
+    if (canvas) {
+        canvas.remove();
+    }
 }
 
 const toggleDelaughter = async (
