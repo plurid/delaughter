@@ -24,12 +24,54 @@ let gainNode: GainNode | null;
 let delaughterNode: AudioWorkletNode | null;
 let audioContext: AudioContext | null;
 let drawVisual: number | null;
+let delaughter: Delaughter | null = null;
 
 const canvasID = 'delaughter-spectrogram';
 
 
+class Delaughter {
+    private gainNode: GainNode;
+
+    constructor(
+        gainNode: GainNode,
+    ) {
+        this.gainNode = gainNode;
+    }
+
+    private laughing() {
+        if (!this.gainNode) {
+            return;
+        }
+        if (this.gainNode.gain.value === 0) {
+            return;
+        }
+        this.gainNode.gain.value = 0;
+    }
+
+    private notLaughing() {
+        if (!this.gainNode) {
+            return;
+        }
+        if (this.gainNode.gain.value === 1) {
+            return;
+        }
+        this.gainNode.gain.value = 1;
+    }
+
+    public check(spectrogram: string) {
+        // const laughing = LaughingNetwork(spectrogram);
+        // if (laughing) {
+        //     this.laughing();
+        // } else {
+        //     this.notLaughing();
+        // }
+    }
+}
+
+
 const renderSpectrogram = (
     audioContext: AudioContext,
+    delaughter: Delaughter,
 ) => {
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
@@ -74,11 +116,14 @@ const renderSpectrogram = (
                 size,
             );
         }
+
+        const dataURL = canvas.toDataURL();
+        delaughter.check(dataURL);
     }
 
     drawSpectrogram();
 
-    document.body.appendChild(canvas);
+    // document.body.appendChild(canvas);
 
     return analyser;
 }
@@ -102,7 +147,9 @@ const applyDelaughter = async (
     }
     gainNode = audioContext.createGain();
 
-    const analyser = renderSpectrogram(audioContext);
+    delaughter = new Delaughter(gainNode);
+
+    const analyser = renderSpectrogram(audioContext, delaughter);
 
     // const processorURL = chrome.runtime.getURL('processor.js');
     // await audioContext.audioWorklet.addModule(processorURL);
