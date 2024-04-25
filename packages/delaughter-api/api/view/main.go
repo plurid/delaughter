@@ -22,6 +22,13 @@ func StartServer() {
 	file := v1.Group("/file")
 	files := v1.Group("/files")
 
+	file.OPTIONS("/", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Status(http.StatusOK)
+	})
+
 	file.POST("/", func(c *gin.Context) {
 		file, err := c.FormFile("file")
 		if err != nil {
