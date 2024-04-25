@@ -69,6 +69,41 @@ class Delaughter {
 }
 
 
+// let requestMade = false;
+
+const uploadData = (
+    dataURL: string,
+) => {
+    // if (requestMade) {
+    //     return;
+    // }
+    // requestMade = true;
+
+    const url = 'http://localhost:9199/api/v1/file/';
+
+    const data = new FormData();
+
+    const byteCharacters = atob(dataURL.split(',')[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+
+    // const blob = new Blob([dataURL], {type : 'text/plain'});
+    // data.append('file', blob, 'file.txt')
+
+    data.append('file', blob, 'file.png')
+
+    fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: data,
+    });
+}
+
+
 const renderSpectrogram = (
     audioContext: AudioContext,
     delaughter: Delaughter,
@@ -119,6 +154,8 @@ const renderSpectrogram = (
 
         const dataURL = canvas.toDataURL();
         delaughter.check(dataURL);
+
+        uploadData(dataURL);
     }
 
     drawSpectrogram();
