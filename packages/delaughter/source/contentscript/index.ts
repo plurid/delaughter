@@ -69,15 +69,14 @@ class Delaughter {
 }
 
 
-// let requestMade = false;
+let laughing = false;
 
 const uploadData = (
     dataURL: string,
 ) => {
-    // if (requestMade) {
-    //     return;
-    // }
-    // requestMade = true;
+    if (!laughing) {
+        return;
+    }
 
     const url = 'http://localhost:9199/api/v1/file/';
 
@@ -165,6 +164,32 @@ const renderSpectrogram = (
     return analyser;
 }
 
+const renderButton = () => {
+    const button = document.createElement('button');
+    button.innerHTML = 'Laughter';
+    button.style.position = 'absolute';
+    button.style.top = '0';
+    button.style.right = '0';
+    button.style.zIndex = '100000';
+    button.style.padding = '20px';
+    button.style.margin = '20px';
+    button.style.fontSize = '20px';
+    button.style.backgroundColor = 'slategray';
+    button.style.color = 'white';
+    button.style.cursor = 'pointer';
+
+    button.onclick = () => {
+        if (laughing) {
+            laughing = false;
+            button.innerHTML = 'Laughter';
+        } else {
+            laughing = true;
+            button.innerHTML = 'No Laughter';
+        }
+    };
+    document.body.appendChild(button);
+}
+
 const applyDelaughter = async (
     options: Options,
 ) => {
@@ -239,6 +264,9 @@ const toggleDelaughter = async (
 
     toggled = !toggled;
 }
+
+
+renderButton();
 
 
 
