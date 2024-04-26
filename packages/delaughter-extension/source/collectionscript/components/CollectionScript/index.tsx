@@ -33,7 +33,18 @@ export default function App() {
         spectrogramsBuffer,
         setSpectrogramsBuffer,
     ] = useState<string[]>([]);
+
+    const [
+        soundData,
+        setSoundData
+    ] = useState<Uint8Array[]>([]);
     // #endregion state
+
+
+    // #region handlers
+    function playSoundData() {
+    }
+    // #endregion handlers
 
 
     // #region effects
@@ -70,6 +81,12 @@ export default function App() {
                 drawVisualRef.current = frame;
             },
             () => isLaughing,
+            (sound) => {
+                setSoundData((data) => ([
+                    ...data,
+                    sound,
+                ]));
+            },
         );
 
         sourceNode.connect(analyser);
@@ -81,6 +98,7 @@ export default function App() {
     // #endregion effects
 
 
+    // #region render
     if (spectrogramsBuffer.length === 0) {
         return (
             <LaughterButton
@@ -114,7 +132,15 @@ export default function App() {
             <SpectrogramsSelector
                 spectrogramsBuffer={spectrogramsBuffer}
                 setSpectrogramsBuffer={setSpectrogramsBuffer}
+                playSoundData={playSoundData}
+                atCancel={() => {
+                    setSoundData([]);
+                }}
+                atUpload={() => {
+                    setSoundData([]);
+                }}
             />
         </div>
     );
+    // #endregion render
 }

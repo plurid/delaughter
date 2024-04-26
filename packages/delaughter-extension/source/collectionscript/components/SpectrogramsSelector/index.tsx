@@ -32,9 +32,15 @@ const FormLine = ({
 export default function SpectrogramsSelector({
     spectrogramsBuffer,
     setSpectrogramsBuffer,
+    playSoundData,
+    atCancel,
+    atUpload,
 } : {
     spectrogramsBuffer: string[];
     setSpectrogramsBuffer: React.Dispatch<React.SetStateAction<string[]>>;
+    playSoundData: () => void;
+    atCancel: () => void;
+    atUpload: () => void;
 }) {
     const [
         currentSpectrogramIndex,
@@ -150,7 +156,15 @@ export default function SpectrogramsSelector({
                         }
                     }}
                 >
-                    Remove Spectrogram
+                    Remove
+                </button>
+
+                <button
+                    onClick={() => {
+                        playSoundData();
+                    }}
+                >
+                    Play
                 </button>
             </FormLine>
 
@@ -166,12 +180,18 @@ export default function SpectrogramsSelector({
                     onClick={() => {
                         setCurrentSpectrogramIndex(0);
                         setSpectrogramsBuffer([]);
+
+                        atCancel();
                     }}
                 >
                     Cancel
                 </button>
 
-                <button>
+                <button
+                    onClick={() => {
+                        atUpload();
+                    }}
+                >
                     Upload
                 </button>
             </FormLine>

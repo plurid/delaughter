@@ -300,3 +300,5 @@ export const spectrogramColors = {
     '298': '#fffffa',
     '299': '#fffffc'
 };
+
+export const spectrogramCanvasID = 'delaughter-spectrogram';

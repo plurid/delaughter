@@ -1,6 +1,7 @@
 // #region imports
 import {
     spectrogramColors,
+    spectrogramCanvasID,
 } from '~data/constants/contentscript';
 // #endregion imports
 
@@ -12,7 +13,7 @@ export const renderSpectrogram = (
     callback: (dataURL: string) => void,
     updateAnimationFrame: (frame: number) => void,
     checkToggle: () => boolean,
-    canvasID: string = 'delaughter-spectrogram',
+    soundCollector?: (data: Uint8Array) => void,
 ) => {
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
@@ -23,7 +24,7 @@ export const renderSpectrogram = (
     const WIDTH = 650;
     const HEIGHT = 650;
     const canvas = document.createElement('canvas');
-    canvas.id = canvasID;
+    canvas.id = spectrogramCanvasID;
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
     canvas.style.position = 'absolute';
@@ -44,6 +45,10 @@ export const renderSpectrogram = (
 
         canvasCtx.fillStyle = 'rgb(0 0 0)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        if (soundCollector) {
+            soundCollector(new Uint8Array(dataArray));
+        }
 
         for (let i = 0; i < dataArray.length; i++) {
             canvasCtx.fillStyle = (spectrogramColors as any)[dataArray[i] + ''];

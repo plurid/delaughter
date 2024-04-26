@@ -4,6 +4,10 @@ import {
 } from '~data/interfaces';
 
 import {
+    spectrogramCanvasID,
+} from '~data/constants/contentscript';
+
+import {
     OPTIONS_KEY,
     defaultOptions,
 } from '~data/constants';
@@ -29,8 +33,6 @@ let delaughterNode: AudioWorkletNode | null;
 let audioContext: AudioContext | null;
 let drawVisual: number | null;
 let delaughter: Delaughter | null = null;
-
-const canvasID = 'delaughter-spectrogram';
 
 
 
@@ -147,7 +149,7 @@ const cleanupDelaughter = () => {
     sourceNode.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    const canvas = document.getElementById(canvasID);
+    const canvas = document.getElementById(spectrogramCanvasID);
     if (canvas) {
         canvas.remove();
     }
