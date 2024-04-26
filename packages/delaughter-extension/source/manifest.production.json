@@ -1,0 +1,46 @@
+{
+    "manifest_version" : 3,
+    "name" : "delaughter",
+    "short_name" : "delaughter",
+    "description" : "toggle laugh track on/off in videos and audios from the web page",
+    "version" : "1.0.0",
+    "author": "plurid",
+
+    "action" : {
+        "default_title" : "delaughter",
+        "default_icon" : "assets/icons/icon.png",
+        "default_popup" : "popup.html"
+    },
+
+    "icons" : {
+        "16" : "assets/icons/icon16.png",
+        "32" : "assets/icons/icon32.png",
+        "48" : "assets/icons/icon48.png",
+        "128" : "assets/icons/icon128.png"
+    },
+
+    "incognito": "spanning",
+
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": [
+            "contentscript.js"
+        ],
+        "run_at": "document_end"
+    }],
+
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "processor.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+
+    "permissions": [
+        "storage"
+    ]
+}
