@@ -28,6 +28,10 @@ let delaughter: Delaughter | null = null;
 
 const canvasID = 'delaughter-spectrogram';
 
+let laughing = false;
+let spectrogramsBuffer: string[] = [];
+let currentSpectrogramIndex = 0;
+
 
 class Delaughter {
     private gainNode: GainNode;
@@ -69,8 +73,6 @@ class Delaughter {
 }
 
 
-let laughing = false;
-
 const uploadData = (
     dataURL: string,
 ) => {
@@ -102,6 +104,84 @@ const uploadData = (
     });
 }
 
+
+const renderSpectrogramsSelector = () => {
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.zIndex = '100000';
+    container.style.backgroundColor = 'white';
+    container.style.padding = '20px';
+    container.style.border = '1px solid black';
+
+    // render the current spectrogram
+    currentSpectrogramIndex = 0;
+    const currentSpectrogram = document.createElement('img');
+    currentSpectrogram.src = spectrogramsBuffer[currentSpectrogramIndex];
+
+    // render left-right trimming selectors
+    const leftTrimming = document.createElement('input');
+    leftTrimming.type = 'range';
+    leftTrimming.min = '0';
+    leftTrimming.max = '100';
+    leftTrimming.value = '0';
+    leftTrimming.step = '1';
+
+    const rightTrimming = document.createElement('input');
+    rightTrimming.type = 'range';
+    rightTrimming.min = '0';
+    rightTrimming.max = '100';
+    rightTrimming.value = '0';
+    rightTrimming.step = '1';
+
+    // render cancel button
+    const cancelButton = document.createElement('button');
+    cancelButton.innerHTML = 'Cancel';
+    cancelButton.style.backgroundColor = 'red';
+    cancelButton.style.color = 'white';
+    cancelButton.style.padding = '10px';
+    cancelButton.style.cursor = 'pointer';
+    cancelButton.onclick = () => {
+        spectrogramsBuffer = [];
+        container.remove();
+    }
+
+    // render upload button
+    const uploadButton = document.createElement('button');
+    uploadButton.innerHTML = 'Upload';
+    uploadButton.style.backgroundColor = 'green';
+    uploadButton.style.color = 'white';
+    uploadButton.style.padding = '10px';
+    uploadButton.style.cursor = 'pointer';
+    uploadButton.onclick = () => {
+        spectrogramsBuffer.forEach(spectrogram => {
+            uploadData(spectrogram);
+        });
+
+        spectrogramsBuffer = [];
+        container.remove();
+    }
+
+    container.appendChild(currentSpectrogram);
+    container.appendChild(leftTrimming);
+    container.appendChild(rightTrimming);
+    container.appendChild(cancelButton);
+    container.appendChild(uploadButton);
+
+    document.body.appendChild(container);
+}
+
+
+const bufferSpectrogram = (
+    spectrogram: string,
+) => {
+    if (!laughing) {
+        return;
+    }
+
+    spectrogramsBuffer.push(spectrogram);
+}
 
 const renderSpectrogram = (
     audioContext: AudioContext,
@@ -152,9 +232,9 @@ const renderSpectrogram = (
         }
 
         const dataURL = canvas.toDataURL();
-        delaughter.check(dataURL);
+        // delaughter.check(dataURL);
 
-        uploadData(dataURL);
+        bufferSpectrogram(dataURL);
     }
 
     drawSpectrogram();
@@ -164,7 +244,8 @@ const renderSpectrogram = (
     return analyser;
 }
 
-const renderButton = () => {
+
+const renderLaughterButton = () => {
     const button = document.createElement('button');
     button.innerHTML = 'Laughter';
     button.style.position = 'absolute';
@@ -179,21 +260,37 @@ const renderButton = () => {
     button.style.cursor = 'pointer';
 
     button.onclick = () => {
-        if (laughing) {
+        if (!laughing) {
+            laughing = true;
+            button.innerHTML = 'Laughter Stopped';
+        } else {
             laughing = false;
             button.innerHTML = 'Laughter';
-        } else {
-            laughing = true;
-            button.innerHTML = 'No Laughter';
+
+            renderSpectrogramsSelector();
+
+            const video = getVideo();
+            if (!video) {
+                return;
+            }
+            video.pause();
         }
     };
     document.body.appendChild(button);
 }
 
+
+const getVideo = () => {
+    const video = document.getElementsByTagName('video')[0];
+
+    return video;
+}
+
+
 const applyDelaughter = async (
     options: Options,
 ) => {
-    const video = document.getElementsByTagName('video')[0];
+    const video = getVideo();
     if (!video) {
         return;
     }
@@ -266,7 +363,7 @@ const toggleDelaughter = async (
 }
 
 
-renderButton();
+renderLaughterButton();
 
 
 
