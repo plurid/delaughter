@@ -25,3 +25,11 @@ export const getActiveTab = async () => {
     const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
     return tab;
 }
+
+
+
+export const getPageVideo = () => {
+    const video = document.getElementsByTagName('video')[0];
+
+    return video;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import CollectionScript from './CollectionScript';
+import CollectionScript from './components/CollectionScript';
 
 
 
