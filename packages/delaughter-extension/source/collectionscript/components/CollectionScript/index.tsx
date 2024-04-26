@@ -81,8 +81,31 @@ export default function App() {
     // #endregion effects
 
 
+    if (spectrogramsBuffer.length === 0) {
+        return (
+            <LaughterButton
+                isLaughing={isLaughing}
+                setIsLaughing={setIsLaughing}
+            />
+        );
+    }
+
     return (
-        <div className="App">
+        <div
+            style={{
+                zIndex: 999999,
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                display: 'grid',
+                placeContent: 'center',
+                background: 'red',
+                color: 'white',
+                fontSize: '1.5rem',
+            }}
+        >
             <LaughterButton
                 isLaughing={isLaughing}
                 setIsLaughing={setIsLaughing}

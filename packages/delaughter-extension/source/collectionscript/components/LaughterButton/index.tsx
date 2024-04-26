@@ -12,16 +12,17 @@ export default function LaughterButton({
     return (
         <button
             style={{
+                zIndex: 100000,
                 position: 'absolute',
                 top: '0',
                 right: '0',
-                zIndex: '100000',
-                padding: '20px',
-                margin: '20px',
-                fontSize: '20px',
-                backgroundColor: 'slategray',
+                padding: '15px',
+                margin: '2x',
+                fontSize: '1.5rem',
+                backgroundColor: 'red',
                 color: 'white',
                 cursor: 'pointer',
+                border: '1px solid black',
             }}
             onClick={() => {
                 setIsLaughing(!isLaughing);

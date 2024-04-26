@@ -77,10 +77,6 @@ export default function SpectrogramsSelector({
     return (
         <div
             style={{
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                zIndex: '100000',
                 backgroundColor: 'red',
                 padding: '20px',
                 border: '1px solid black',
@@ -154,7 +150,7 @@ export default function SpectrogramsSelector({
                         }
                     }}
                 >
-                    Remove Current Spectrogram
+                    Remove Spectrogram
                 </button>
             </FormLine>
 
