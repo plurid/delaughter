@@ -42,6 +42,34 @@ export default function SpectrogramsSelector({
     ] = useState(0);
 
 
+    const uploadData = (
+        dataURL: string,
+    ) => {
+        const url = 'http://localhost:9199/api/v1/file/';
+
+        const data = new FormData();
+
+        const byteCharacters = atob(dataURL.split(',')[1]);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+
+        // const blob = new Blob([dataURL], {type : 'text/plain'});
+        // data.append('file', blob, 'file.txt')
+
+        data.append('file', blob, 'file.png')
+
+        fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: data,
+        });
+    }
+
+
     if (spectrogramsBuffer.length === 0) {
         return (<></>);
     }
