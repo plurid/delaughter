@@ -18,13 +18,16 @@ const outputPath = path.join(__dirname, 'distribution');
 const base = {
     context: __dirname,
     entry: {
-        contentscript: './source/contentscript/index.ts',
+        contentscript: NODE_ENV === DEVELOPMENT
+            ? './source/collectionscript/index.tsx'
+            : './source/contentscript/index.ts',
         popup: './source/popup/index.tsx',
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".jsx"],
         alias: {
             "~common": path.resolve(__dirname, "source/common"),
+            "~collectionscript": path.resolve(__dirname, "source/collectionscript"),
             "~contentscript": path.resolve(__dirname, "source/contentscript"),
             "~data": path.resolve(__dirname, "source/data"),
             "~logic": path.resolve(__dirname, "source/logic"),
@@ -52,7 +55,7 @@ const base = {
     plugins: [
         new CopyPlugin({
             patterns: [
-                { from: './source/manifest.json', to: './manifest.json' },
+                { from: `./source/manifest.${NODE_ENV === DEVELOPMENT ? 'collection' : 'production'}.json`, to: './manifest.json' },
                 { from: './source/assets', to: 'assets' },
                 { from: './source/processor/index.js', to: './processor.js' },
             ],
@@ -66,7 +69,6 @@ const base = {
             'process.env': {
                 NODE_ENV: JSON.stringify(NODE_ENV),
 
-                TRACING: JSON.stringify(process.env.TRACING),
                 API_ENDPOINT: JSON.stringify(process.env.API_ENDPOINT),
             },
         }),
